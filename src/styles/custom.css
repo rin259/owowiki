@@ -1,5 +1,7 @@
 @layer starlight.user {
-	:root {
+	:root,
+	:root[data-theme='dark'],
+	:root[data-theme='light'] {
 		--sl-content-width: 52rem;
 		--owo-bg-image: url('https://img.rin.red/file/1774289921626_A1ED6B4BCAEEC7005AE1B6FA030DAA06.png');
 		--owo-accent-warm: rgba(255, 176, 116, 0.24);

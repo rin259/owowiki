@@ -1,0 +1,53 @@
+---
+const { entry } = Astro.locals.starlightRoute;
+const PAGE_TITLE_ID = '_top';
+const raw = entry.body ?? '';
+
+const plainText = raw
+	.replace(/```[\s\S]*?```/g, ' ')
+	.replace(/`[^`]*`/g, ' ')
+	.replace(/!\[[^\]]*]\([^)]+\)/g, ' ')
+	.replace(/\[([^\]]+)]\([^)]+\)/g, '$1')
+	.replace(/[#>*_\-~|]/g, ' ')
+	.replace(/\s+/g, ' ')
+	.trim();
+
+const cjkCount = (plainText.match(/[\u3400-\u9fff]/g) || []).length;
+const latinWordCount = (plainText.match(/[A-Za-z0-9_]+/g) || []).length;
+const readingUnits = cjkCount + latinWordCount;
+const readingMinutes = Math.max(1, Math.ceil(readingUnits / 260));
+---
+
+<h1 id={PAGE_TITLE_ID}>{entry.data.title}</h1>
+<p class="page-meta">
+	<span class="reading-time">约 {readingMinutes} 分钟读完</span>
+</p>
+
+<style>
+	@layer starlight.core {
+		h1 {
+			margin-top: 1rem;
+			margin-bottom: 0.35rem;
+			font-size: var(--sl-text-h1);
+			line-height: var(--sl-line-height-headings);
+			font-weight: 600;
+			color: var(--sl-color-white);
+		}
+
+		.page-meta {
+			margin: 0;
+			color: var(--sl-color-text-accent);
+			font-size: 0.92rem;
+		}
+
+		.reading-time {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			padding: 0.2rem 0.55rem;
+			border: 1px solid var(--sl-color-hairline);
+			border-radius: 999px;
+			background: color-mix(in srgb, var(--sl-color-bg-sidebar) 70%, transparent);
+		}
+	}
+</style>

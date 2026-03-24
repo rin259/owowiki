@@ -1,0 +1,66 @@
+---
+import DefaultHead from '@astrojs/starlight/components/Head.astro';
+
+const backgroundImage =
+	'https://img.rin.red/file/1774289921626_A1ED6B4BCAEEC7005AE1B6FA030DAA06.png';
+---
+
+<script is:inline>
+	try {
+		document.documentElement.dataset.theme = 'dark';
+		if (localStorage.getItem('starlight-theme') === 'light') {
+			localStorage.setItem('starlight-theme', 'dark');
+		}
+	} catch {}
+</script>
+
+<DefaultHead />
+
+<link rel="dns-prefetch" href="//img.rin.red" />
+<link rel="preconnect" href="https://img.rin.red" />
+<link rel="preload" as="image" href={backgroundImage} fetchpriority="high" />
+
+<style is:inline>
+	html,
+	body {
+		background-color: #070b12;
+	}
+
+	body {
+		min-height: 100vh;
+	}
+
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		background:
+			linear-gradient(180deg, rgba(7, 11, 18, 0.78), rgba(7, 11, 18, 0.9)),
+			url('https://img.rin.red/file/1774289921626_A1ED6B4BCAEEC7005AE1B6FA030DAA06.png') center /
+				cover no-repeat;
+		filter: blur(1px);
+		transform: scale(1.02);
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.page,
+	main {
+		position: relative;
+		z-index: 1;
+	}
+
+	.sidebar {
+		position: relative;
+		z-index: 12;
+	}
+
+	.main-frame {
+		position: relative;
+		z-index: 1;
+	}
+
+	header.header {
+		z-index: 30;
+	}
+</style>

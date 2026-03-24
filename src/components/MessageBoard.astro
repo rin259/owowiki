@@ -1,0 +1,615 @@
+<section class="board-shell">
+	<div class="board-hero">
+		<p class="eyebrow">OwO 留言板</p>
+		<h2>想提建议、反馈问题，或者单纯想留句话，都可以发在这里。</h2>
+		<p class="lede">
+			填写 <strong>QQ 号</strong> 和 <strong>留言内容</strong>。提交成功后会直接公开显示在下方列表里。
+		</p>
+	</div>
+
+	<div class="board-grid">
+		<section class="board-card form-card">
+			<div class="card-head">
+				<h3>提交留言</h3>
+				<p>请填写真实 QQ 号，方便主人回访。为减少误触和刷屏，成功提交后会有短暂冷却。</p>
+			</div>
+
+			<form id="message-board-form" class="board-form">
+				<label class="field">
+					<span>QQ 号</span>
+					<input
+						id="qq-input"
+						name="qq"
+						type="text"
+						inputmode="numeric"
+						placeholder="你的QQ号"
+						maxlength="11"
+						required
+					/>
+				</label>
+
+				<label class="field">
+					<span>留言内容</span>
+					<textarea
+						id="message-input"
+						name="message"
+						rows="7"
+						maxlength="500"
+						placeholder="想对 OwO 或主人说什么，都可以写在这里。"
+						required
+					></textarea>
+				</label>
+
+				<div class="form-meta">
+					<p id="char-count">0 / 500</p>
+					<p class="privacy-note">公开展示时默认只显示 QQ 尾号。</p>
+				</div>
+
+				<button id="submit-button" type="submit">提交留言</button>
+				<p id="form-status" class="form-status" aria-live="polite"></p>
+			</form>
+		</section>
+
+		<section class="board-card list-card">
+			<div class="card-head">
+				<h3>公开留言</h3>
+				<p>新留言提交成功后会直接出现在这里。</p>
+			</div>
+
+			<div class="list-toolbar">
+				<p id="message-summary" class="message-summary">准备加载留言…</p>
+				<button id="reload-button" class="ghost-button" type="button">刷新</button>
+			</div>
+
+			<div id="message-list" class="message-list">
+				<p class="empty-state">正在加载留言…</p>
+			</div>
+			<div class="list-actions">
+				<button id="load-more-button" class="ghost-button" type="button" hidden>加载更多</button>
+			</div>
+		</section>
+	</div>
+</section>
+
+<script>
+	import { createClient } from '@supabase/supabase-js';
+
+	const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+	const supabaseKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+	const form = document.querySelector('#message-board-form');
+	const qqInput = document.querySelector('#qq-input');
+	const messageInput = document.querySelector('#message-input');
+	const charCount = document.querySelector('#char-count');
+	const submitButton = document.querySelector('#submit-button');
+	const formStatus = document.querySelector('#form-status');
+	const messageList = document.querySelector('#message-list');
+	const messageSummary = document.querySelector('#message-summary');
+	const loadMoreButton = document.querySelector('#load-more-button');
+	const reloadButton = document.querySelector('#reload-button');
+	const cooldownStorageKey = 'owo-message-board-cooldown-until';
+	const recentSubmissionStorageKey = 'owo-message-board-recent-submissions';
+	const cooldownSeconds = 15;
+	const duplicateWindowMs = 10 * 60 * 1000;
+	const pageSize = 12;
+	let cooldownTimer = null;
+	let currentMessages = [];
+	let loadedCount = 0;
+	let hasMore = false;
+
+	const maskQq = (qq) => {
+		if (!qq || qq.length < 5) return 'QQ 用户';
+		return `QQ ${qq.slice(0, 2)}***${qq.slice(-2)}`;
+	};
+
+	const formatDate = (value) =>
+		new Date(value).toLocaleString('zh-CN', {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+		});
+
+	const renderMessages = (items) => {
+		if (!items?.length) {
+			messageList.innerHTML = '<p class="empty-state">还没有公开留言，来成为第一个吧。</p>';
+			messageSummary.textContent = '当前还没有公开留言';
+			loadMoreButton.hidden = true;
+			return;
+		}
+
+		messageList.innerHTML = items
+			.map(
+				(item) => `
+					<article class="message-item">
+						<div class="message-top">
+							<strong>${maskQq(item.qq_number)}</strong>
+							<time datetime="${item.created_at}">${formatDate(item.created_at)}</time>
+						</div>
+						<p>${String(item.content)
+							.replace(/&/g, '&amp;')
+							.replace(/</g, '&lt;')
+							.replace(/>/g, '&gt;')
+							.replace(/\n/g, '<br />')}</p>
+					</article>
+				`
+			)
+			.join('');
+		messageSummary.textContent = `当前已显示 ${items.length} 条最新留言`;
+		loadMoreButton.hidden = !hasMore;
+		loadMoreButton.textContent = hasMore ? '加载更多' : '已经到底了';
+	};
+
+	const setStatus = (text, tone = 'neutral') => {
+		formStatus.textContent = text;
+		formStatus.dataset.tone = tone;
+	};
+
+	const normalizeContent = (value) =>
+		value
+			.toLowerCase()
+			.replace(/\s+/g, '')
+			.replace(/[^\u4e00-\u9fa5a-z0-9]/gi, '');
+
+	const createBigrams = (value) => {
+		if (value.length < 2) return new Set([value]);
+		const grams = new Set();
+		for (let i = 0; i < value.length - 1; i += 1) {
+			grams.add(value.slice(i, i + 2));
+		}
+		return grams;
+	};
+
+	const getSimilarity = (a, b) => {
+		if (!a || !b) return 0;
+		if (a === b) return 1;
+		if (a.includes(b) || b.includes(a)) return 0.96;
+		const aSet = createBigrams(a);
+		const bSet = createBigrams(b);
+		const intersection = [...aSet].filter((item) => bSet.has(item)).length;
+		const union = new Set([...aSet, ...bSet]).size || 1;
+		return intersection / union;
+	};
+
+	const readRecentSubmissions = () => {
+		try {
+			const raw = localStorage.getItem(recentSubmissionStorageKey);
+			const parsed = raw ? JSON.parse(raw) : [];
+			return Array.isArray(parsed) ? parsed : [];
+		} catch {
+			return [];
+		}
+	};
+
+	const writeRecentSubmissions = (items) => {
+		localStorage.setItem(recentSubmissionStorageKey, JSON.stringify(items));
+	};
+
+	const cleanupRecentSubmissions = () => {
+		const now = Date.now();
+		const items = readRecentSubmissions().filter((item) => now - item.createdAt < duplicateWindowMs);
+		writeRecentSubmissions(items);
+		return items;
+	};
+
+	const setButtonState = (enabled, label) => {
+		submitButton.disabled = !enabled;
+		submitButton.textContent = label;
+	};
+
+	const clearCooldownTimer = () => {
+		if (cooldownTimer) {
+			window.clearInterval(cooldownTimer);
+			cooldownTimer = null;
+		}
+	};
+
+	const applyCooldown = (until) => {
+		clearCooldownTimer();
+
+		const tick = () => {
+			const remainMs = until - Date.now();
+			if (remainMs <= 0) {
+				localStorage.removeItem(cooldownStorageKey);
+				clearCooldownTimer();
+				setButtonState(true, '提交留言');
+				if (formStatus.dataset.tone === 'cooldown') {
+					setStatus('现在可以再次提交了。', 'success');
+				}
+				return;
+			}
+
+			const remain = Math.ceil(remainMs / 1000);
+			setButtonState(false, `请等待 ${remain}s`);
+			setStatus(`刚刚已经提交过一条留言了，请等待 ${remain} 秒后再发。`, 'cooldown');
+		};
+
+		tick();
+		cooldownTimer = window.setInterval(tick, 1000);
+	};
+
+	const updateCount = () => {
+		const length = messageInput.value.length;
+		charCount.textContent = `${length} / 500`;
+		charCount.dataset.tone = length >= 470 ? 'danger' : length >= 400 ? 'warn' : 'normal';
+	};
+
+	updateCount();
+	messageInput.addEventListener('input', updateCount);
+
+	const savedCooldown = Number(localStorage.getItem(cooldownStorageKey) || 0);
+	if (savedCooldown > Date.now()) {
+		applyCooldown(savedCooldown);
+	}
+	cleanupRecentSubmissions();
+
+	if (!supabaseUrl || !supabaseKey) {
+		setStatus('缺少 Supabase 前端配置，留言板暂时不可用。', 'error');
+		messageList.innerHTML = '<p class="empty-state">留言板配置未完成。</p>';
+		setButtonState(false, '暂不可用');
+	} else {
+		const supabase = createClient(supabaseUrl, supabaseKey);
+
+		const loadMessages = async ({ append = false } = {}) => {
+			const from = append ? loadedCount : 0;
+			const to = from + pageSize - 1;
+			const { data, error } = await supabase
+				.from('message_board_entries')
+				.select('id, qq_number, content, created_at')
+				.eq('status', 'approved')
+				.order('created_at', { ascending: false })
+				.range(from, to);
+
+			if (error) {
+				messageList.innerHTML =
+					'<p class="empty-state">留言列表暂时加载失败。若你是站点维护者，请先执行 Supabase SQL 脚本。</p>';
+				messageSummary.textContent = '留言加载失败';
+				loadMoreButton.hidden = true;
+				loadMoreButton.disabled = false;
+				loadMoreButton.textContent = '加载更多';
+				return;
+			}
+
+			currentMessages = append ? [...currentMessages, ...data] : data;
+			loadedCount = currentMessages.length;
+			hasMore = data.length === pageSize;
+			renderMessages(currentMessages);
+		};
+
+		void loadMessages();
+
+		loadMoreButton.addEventListener('click', async () => {
+			loadMoreButton.disabled = true;
+			loadMoreButton.textContent = '加载中…';
+			await loadMessages({ append: true });
+			loadMoreButton.disabled = false;
+		});
+
+		reloadButton.addEventListener('click', async () => {
+			reloadButton.disabled = true;
+			messageSummary.textContent = '正在刷新留言…';
+			currentMessages = [];
+			loadedCount = 0;
+			await loadMessages();
+			reloadButton.disabled = false;
+		});
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+
+			const cooldownUntil = Number(localStorage.getItem(cooldownStorageKey) || 0);
+			if (cooldownUntil > Date.now()) {
+				applyCooldown(cooldownUntil);
+				return;
+			}
+
+			const qq = qqInput.value.trim();
+			const content = messageInput.value.trim();
+
+			if (!/^\d{5,11}$/.test(qq)) {
+				setStatus('QQ 号格式不对，请填写 5 到 11 位数字。', 'error');
+				return;
+			}
+
+			if (!content) {
+				setStatus('留言内容不能为空。', 'error');
+				return;
+			}
+
+			const normalized = normalizeContent(content);
+			const recentSubmissions = cleanupRecentSubmissions();
+			const duplicateItem = recentSubmissions.find((item) => {
+				if (item.qq !== qq) return false;
+				return getSimilarity(item.normalizedContent, normalized) >= 0.88;
+			});
+
+			if (duplicateItem) {
+				setStatus('检测到你刚刚发过相似内容了，建议稍微改一改再提交。', 'error');
+				return;
+			}
+
+			setButtonState(false, '提交中…');
+			setStatus('正在提交留言，请稍等一下。');
+
+			const { error } = await supabase.from('message_board_entries').insert({
+				qq_number: qq,
+				content,
+			});
+
+			if (error) {
+				setButtonState(true, '提交留言');
+				setStatus('提交失败了，请过一会儿再试试。', 'error');
+				return;
+			}
+
+			form.reset();
+			updateCount();
+			writeRecentSubmissions([
+				...recentSubmissions,
+				{
+					qq,
+					normalizedContent: normalized,
+					createdAt: Date.now(),
+				},
+			]);
+			const nextCooldown = Date.now() + cooldownSeconds * 1000;
+			localStorage.setItem(cooldownStorageKey, String(nextCooldown));
+			setStatus('提交成功，留言已经公开显示。稍后如果想补充内容，可以再回来继续发。', 'success');
+			currentMessages = [];
+			loadedCount = 0;
+			void loadMessages();
+			applyCooldown(nextCooldown);
+		});
+	}
+</script>
+
+<style>
+	.board-shell {
+		margin-top: 1.2rem;
+	}
+
+	.board-hero {
+		margin-bottom: 1.4rem;
+		padding: 1.25rem 1.2rem;
+		border: 1px solid var(--owo-border-soft);
+		border-radius: 1.25rem;
+		background:
+			radial-gradient(circle at top right, color-mix(in srgb, var(--sl-color-blue-low) 70%, transparent), transparent 42%),
+			linear-gradient(180deg, rgba(14, 24, 38, 0.82), rgba(10, 16, 26, 0.86));
+	}
+
+	.eyebrow {
+		margin: 0 0 0.45rem;
+		color: var(--sl-color-text-accent);
+		font-size: 0.86rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.board-hero h2 {
+		margin: 0;
+		font-size: clamp(1.35rem, 2.8vw, 2rem);
+		line-height: 1.25;
+	}
+
+	.lede {
+		margin: 0.8rem 0 0;
+		max-width: 48rem;
+		color: var(--owo-text-muted);
+	}
+
+	.board-grid {
+		display: grid;
+		grid-template-columns: 1.05fr 0.95fr;
+		gap: 1rem;
+	}
+
+	.board-card {
+		border: 1px solid var(--owo-border-soft);
+		border-radius: 1.2rem;
+		background: rgba(12, 18, 28, 0.74);
+		padding: 1rem;
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.04),
+			0 16px 34px rgba(6, 10, 16, 0.18);
+	}
+
+	.list-toolbar {
+		margin-top: 0.9rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.8rem;
+	}
+
+	.message-summary {
+		margin: 0;
+		color: var(--owo-text-soft);
+		font-size: 0.92rem;
+	}
+
+	.card-head h3 {
+		margin: 0;
+	}
+
+	.card-head p {
+		margin: 0.35rem 0 0;
+		color: var(--owo-text-soft);
+	}
+
+	.board-form {
+		margin-top: 1rem;
+		display: grid;
+		gap: 0.9rem;
+	}
+
+	.field {
+		display: grid;
+		gap: 0.45rem;
+	}
+
+	.field span {
+		font-weight: 600;
+		color: var(--owo-text-main);
+	}
+
+	.field input,
+	.field textarea {
+		width: 100%;
+		border: 1px solid var(--owo-border-soft);
+		border-radius: 0.9rem;
+		background: rgba(8, 13, 21, 0.82);
+		color: var(--owo-text-main);
+		padding: 0.85rem 0.95rem;
+		font: inherit;
+	}
+
+	.field input::placeholder,
+	.field textarea::placeholder {
+		color: var(--owo-text-soft);
+	}
+
+	.field input:focus,
+	.field textarea:focus {
+		outline: 2px solid color-mix(in srgb, var(--sl-color-blue) 45%, transparent);
+		outline-offset: 1px;
+	}
+
+	.form-meta {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		font-size: 0.9rem;
+		color: var(--owo-text-soft);
+	}
+
+	#char-count[data-tone='warn'] {
+		color: #ffd08a;
+	}
+
+	#char-count[data-tone='danger'] {
+		color: #ff9f9f;
+		font-weight: 700;
+	}
+
+	.privacy-note {
+		text-align: right;
+	}
+
+	button[type='submit'] {
+		border: 0;
+		border-radius: 999px;
+		padding: 0.85rem 1.15rem;
+		background: linear-gradient(135deg, var(--sl-color-blue), color-mix(in srgb, var(--sl-color-blue) 70%, white));
+		color: white;
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+	}
+
+	.ghost-button {
+		border: 1px solid var(--owo-border-soft);
+		border-radius: 999px;
+		padding: 0.55rem 0.9rem;
+		background: rgba(13, 19, 30, 0.76);
+		color: var(--owo-text-main);
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.ghost-button:disabled {
+		opacity: 0.65;
+		cursor: wait;
+	}
+
+	button[type='submit']:disabled {
+		opacity: 0.7;
+		cursor: wait;
+	}
+
+	.form-status {
+		min-height: 2.75rem;
+		margin: 0;
+		padding: 0.75rem 0.9rem;
+		border: 1px solid transparent;
+		border-radius: 0.9rem;
+		font-size: 0.95rem;
+		background: rgba(13, 19, 30, 0.76);
+	}
+
+	.form-status[data-tone='error'] {
+		color: #ffd0d0;
+		border-color: color-mix(in srgb, #ff7a7a 40%, transparent);
+		background: color-mix(in srgb, #5b2323 45%, var(--sl-color-bg));
+	}
+
+	.form-status[data-tone='success'] {
+		color: #baf3ca;
+		border-color: color-mix(in srgb, #63d28b 35%, transparent);
+		background: color-mix(in srgb, #1f4930 42%, var(--sl-color-bg));
+	}
+
+	.form-status[data-tone='cooldown'] {
+		color: #cfe3ff;
+		border-color: color-mix(in srgb, var(--sl-color-blue) 45%, transparent);
+		background: color-mix(in srgb, var(--sl-color-blue-low) 55%, var(--sl-color-bg));
+	}
+
+	.message-list {
+		margin-top: 1rem;
+		display: grid;
+		gap: 0.8rem;
+	}
+
+	.message-item {
+		padding: 0.9rem 0.95rem;
+		border: 1px solid var(--owo-border-soft);
+		border-radius: 0.95rem;
+		background: rgba(11, 17, 27, 0.72);
+	}
+
+	.message-item:nth-child(n + 9) {
+		opacity: 0.96;
+	}
+
+	.message-top {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		align-items: baseline;
+		margin-bottom: 0.45rem;
+	}
+
+	.message-top strong {
+		color: var(--sl-color-text-accent);
+	}
+
+	.message-top time {
+		color: var(--owo-text-soft);
+		font-size: 0.85rem;
+	}
+
+	.message-item p,
+	.empty-state {
+		margin: 0;
+		color: var(--owo-text-muted);
+	}
+
+	.list-actions {
+		margin-top: 0.9rem;
+		display: flex;
+		justify-content: center;
+	}
+
+	@media (max-width: 60rem) {
+		.board-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.list-toolbar {
+			flex-direction: column;
+			align-items: stretch;
+		}
+	}
+</style>

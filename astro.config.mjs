@@ -6,19 +6,38 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'OwO 插件使用文档',
+			description: 'Luna Bot、Koishi 与 AstrBot 的用户向插件使用文档。',
+			tagline: 'OwO 指令手册',
+			lastUpdated: true,
+			customCss: ['/src/styles/custom.css'],
+			tableOfContents: {
+				minHeadingLevel: 2,
+				maxHeadingLevel: 3,
+			},
+			components: {
+				Head: './src/components/Head.astro',
+				PageFrame: './src/components/PageFrame.astro',
+				PageTitle: './src/components/PageTitle.astro',
+			},
+			markdown: {
+				headingLinks: true,
+			},
 			sidebar: [
 				{
-					label: 'Guides',
+					label: '开始',
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
+						{ label: '首页', slug: '' },
+						{ label: '留言板', slug: 'message-board' },
 					],
 				},
 				{
-					label: 'Reference',
-					autogenerate: { directory: 'reference' },
+					label: '插件教程',
+					items: [
+						{ label: 'Luna Bot', slug: 'luna-bot' },
+						{ label: 'Koishi', slug: 'koishi' },
+						{ label: 'AstrBot', slug: 'astrbot' },
+					],
 				},
 			],
 		}),

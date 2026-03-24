@@ -1,40 +1,46 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: OwO的食用指南
+description: 面向用户整理的 Luna Bot、Koishi 与 AstrBot 插件使用说明。
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
-  image:
-    file: ../../assets/houston.webp
+  tagline: OwO 的聊天指令手册，尽量写得像群友能直接照着用的说明书。
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: 查看 Luna Bot
+      link: /luna-bot/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
-      icon: external
-      variant: minimal
+    - text: 去留言板
+      link: /message-board/
+      icon: right-arrow
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## OwO 是谁
+
+OwO 是一款由3184015596(Asterism)部署，定制的一款QQ机器人。
+
+- 这份文档主要讲：发什么命令、会发生什么、哪些功能适合普通用户直接用。
+- 如果你发现某条命令没有权限，多半它是管理员专用的。
+- 有问题可以联系主人：`QQ 3184015596`
+
+## 你能在这里找到什么
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Luna Bot" icon="seti:python">
+		整理签到、解析、表情包、Steam、铁路工具等常用功能。
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Koishi" icon="node">
+		收录点歌、Minecraft 查询、QQ 工具、热搜和帮助命令。
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="AstrBot" icon="seti:docker">
+		包括群分析、QQ 空间、表情包小偷、今日老婆、长期记忆等功能。
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="留言板" icon="comment-alt">
+		填写 QQ 号和留言内容，给 OwO 或主人留句话。
 	</Card>
 </CardGrid>
+
+## 使用前先看
+
+- 每一条命令都尽量写成可直接照着发的形式。
+- 文档里凡是写了“管理员专用”的命令，普通用户不能使用。

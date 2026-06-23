@@ -29,6 +29,7 @@ export default defineConfig({
 					items: [
 						{ label: '首页', slug: '' },
 						{ label: '留言板', slug: 'message-board' },
+						{ label: '免责声明', slug: 'disclaimer' },
 					],
 				},
 				{

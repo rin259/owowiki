@@ -1,15 +1,17 @@
 ---
 title: Koishi
-description: "/opt/koishi-app 当前可用的用户向命令与更详细的使用说明。"
+description: Koishi 侧当前可用的用户向命令与更详细的使用说明。
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## 先看这页怎么用
 
 这页主要写 Koishi 里普通用户常用、而且已经确认存在的命令。
 
-> 注意
-> 有些命令是管理员专用。
-> 如果你发送后提示权限不足，或机器人没有响应，通常就是因为当前命令只开放给管理员。
+<Aside title="注意">
+	有些命令是管理员专用。如果你发送后提示权限不足，或机器人没有响应，通常就是因为当前命令只开放给管理员。
+</Aside>
 
 <p class="cmd-tip">下方出现的代码块和单行命令示例，默认都按“可直接复制发送”来写。</p>
 
@@ -17,7 +19,7 @@ description: "/opt/koishi-app 当前可用的用户向命令与更详细的使�
 
 如果你记不清某条命令怎么发，最先用这个。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 help
@@ -29,7 +31,7 @@ help 指令名
 
 示例：
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 help ping
@@ -51,7 +53,7 @@ help qtool
 
 用来探测一个 IP 或域名能不能连通。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 ping 1.1.1.1
@@ -70,7 +72,7 @@ ping mc.summervibe.cc
 
 查看 B 站热搜。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 b23
@@ -89,7 +91,7 @@ b23 10
 
 这是网易云点歌语音命令，当前实际别名就是 `163`。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 163 蔚蓝档案
@@ -112,7 +114,7 @@ b23 10
 
 让机器人给你点赞，或者给指定的人点赞。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 qtool zanwo
@@ -132,7 +134,7 @@ qtool zanwo.user @某人
 
 发送戳一戳。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 qtool poke
@@ -152,7 +154,7 @@ qtool poke 3 @某人
 
 和表情包 / 表情贴图有关。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 qtool stick
@@ -181,7 +183,7 @@ qtool stick.random 5
 
 角色台词 / AI 说话相关命令。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 qtool aisay.list
@@ -205,7 +207,7 @@ qtool aisay.text 芙宁娜 晚上早点睡
 
 群签到相关工具。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 qtool gsign
@@ -227,7 +229,7 @@ qtool gsign.group 123456789
 
 聊天统计命令。当前 help 中显示为 `messagecounter`，但实际主入口常写成 `messageCounter`。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 messageCounter
@@ -278,7 +280,7 @@ messageCounter.群排行榜 10 -w
 
 这是和服务器联动的工具，当前主前缀是 `mcs`。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 mcs.code 123456
@@ -318,7 +320,7 @@ mcs.list
 
 `mc-tools` 当前已启用，且配置了 `mt -> mc` 的别名。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 mc.help
@@ -366,7 +368,7 @@ mt player Steve
 
 这组命令适合不想记 `mc.*` 层级时直接使用。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 motdje mc.summervibe.cc
@@ -419,7 +421,7 @@ modrinth fabric-api
 
 接 WolframAlpha 查询。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 alpha sin(x)^2 + cos(x)^2
@@ -438,7 +440,7 @@ alpha weather shanghai
 
 做随机选择。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 or 吃面 or 吃饭
@@ -457,7 +459,7 @@ or 打游戏 or 看番 or 睡觉
 
 这是一个互动小游戏命令。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 恶魔轮盘
@@ -472,7 +474,7 @@ or 打游戏 or 看番 or 睡觉
 
 这是 `pixluna` 插件入口。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 pixluna
@@ -491,7 +493,7 @@ pixluna
 
 管理员可以给复杂命令做短别名。
 
-<p class="cmd-tip">管理员专用</p>
+<p class="cmd-label">管理员专用</p>
 
 ```text
 alias mcsinfo mcs.info
@@ -512,7 +514,7 @@ unalias mcsinfo
 
 全服广播命令。
 
-<p class="cmd-tip">管理员专用</p>
+<p class="cmd-label">管理员专用</p>
 
 ```text
 broadcast 机房维护结束，机器人已恢复
@@ -541,7 +543,7 @@ broadcast -o 只发当前账号负责的群
 
 Koishi 这边命令比较多，最省事的用法仍然是：
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 help

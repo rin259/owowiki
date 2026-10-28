@@ -1,15 +1,17 @@
 ---
 title: Luna Bot
-description: "/home/ryan/luna 的 NoneBot2 插件清单和已核实用法。"
+description: Luna Bot 的 NoneBot2 插件清单和已核实用法。
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## 可用插件
 
 这里仅保留对普通用户有意义的插件和用法。
 
-> 注意
-> 本页有一部分命令是管理员专用。
-> 如果你发送后没有权限，或无响应，那么这就是管理员指令。
+<Aside title="注意">
+	本页有一部分命令是管理员专用。如果你发送后没有权限，或无响应，那么这就是管理员指令。
+</Aside>
 
 <p class="cmd-tip">下方出现的代码块和单行命令示例，默认都按“可直接复制发送”来写。</p>
 
@@ -65,7 +67,7 @@ description: "/home/ryan/luna 的 NoneBot2 插件清单和已核实用法。"
 
 格式是多行：
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 code [语言] [stdin]
@@ -74,7 +76,7 @@ code [语言] [stdin]
 
 示例：
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 code py 你好
@@ -143,13 +145,13 @@ print(input())
 
 这个插件已经在 Luna 里安装并启用，版本是 `nonebot-plugin-deer-pipe v0.6.2`。
 
-<p class="cmd-tip">可直接复制发送；命令里的“🦌”也都可以换成“鹿”。</p>
+<p class="cmd-label">可直接复制发送；命令里的“🦌”也都可以换成“鹿”。</p>
 
 #### 自己🦌一次
 
 适合平时自己签到。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 🦌
@@ -165,7 +167,7 @@ print(input())
 
 只能在群聊或频道里用，因为要 `@` 人。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 🦌 @某人
@@ -173,7 +175,7 @@ print(input())
 
 示例：
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 🦌 @Asterism
@@ -189,7 +191,7 @@ print(input())
 
 用来补本月漏掉的日期。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 补🦌 3
@@ -204,7 +206,7 @@ print(input())
 
 #### 看自己的本月🦌日历
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 🦌历
@@ -219,7 +221,7 @@ print(input())
 
 只能在群聊或频道里用。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 🦌历 @某人
@@ -227,7 +229,7 @@ print(input())
 
 示例：
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 🦌历 @Asterism
@@ -237,7 +239,7 @@ print(input())
 
 只能在群聊或频道里用。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 🦌榜
@@ -252,7 +254,7 @@ print(input())
 
 这个命令是用户自己控制的，不需要管理员。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 帮🦌 off
@@ -272,7 +274,7 @@ print(input())
 
 群管理员专用。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 帮🦌 off @某人
@@ -284,7 +286,7 @@ print(input())
 
 示例：
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 帮🦌 off @Asterism
@@ -299,7 +301,7 @@ print(input())
 
 群管理员专用。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 禁🦌 @某人 3d
@@ -323,7 +325,7 @@ print(input())
 
 #### 打开插件帮助
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 🦌帮助
@@ -369,7 +371,9 @@ print(input())
 
 实际制作时，发送 `关键词 + 图片/文字` 即可。
 
-### Steam Info（这个暂不可用，因为主播还没有找到steamworks的key，号丢了）
+### Steam Info
+
+暂不可用：主播还没有找到 Steamworks 的 key，原来的号也丢了。
 
 命令：
 

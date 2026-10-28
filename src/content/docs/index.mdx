@@ -1,6 +1,6 @@
 ---
 title: OwO的食用指南
-description: 面向用户整理的 Luna Bot、Koishi 与 AstrBot 插件使用说明。
+description: 面向用户整理的 Luna Bot、Koishi、AstrBot 与语音通话使用说明。
 template: splash
 hero:
   tagline: OwO 的聊天指令手册，尽量写得像群友能直接照着用的说明书。
@@ -8,15 +8,12 @@ hero:
     - text: 查看 Luna Bot
       link: /luna-bot/
       icon: right-arrow
-    - text: 去留言板
-      link: /message-board/
-      icon: right-arrow
     - text: 查看免责声明
       link: /disclaimer/
       icon: right-arrow
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## OwO 是谁
 
@@ -28,22 +25,27 @@ OwO 是一款由3184015596(Asterism)部署，定制的一款QQ机器人。
 
 ## 你能在这里找到什么
 
-<CardGrid stagger>
-	<Card title="Luna Bot" icon="seti:python">
-		整理签到、解析、表情包、Steam、铁路工具等常用功能。
-	</Card>
-	<Card title="Koishi" icon="node">
-		收录点歌、Minecraft 查询、QQ 工具、热搜和帮助命令。
-	</Card>
-	<Card title="AstrBot" icon="seti:docker">
-		包括群分析、QQ 空间、表情包小偷、今日老婆、长期记忆等功能。
-	</Card>
-	<Card title="留言板" icon="comment-alt">
-		填写 QQ 号和留言内容，给 OwO 或主人留句话。
-	</Card>
-	<Card title="免责声明" icon="document">
-		查看 AIGC 内容、第三方服务、用户行为与数据处理说明。 [阅读免责声明](/disclaimer/)
-	</Card>
+<CardGrid>
+	<LinkCard
+		title="Luna Bot"
+		description="签到、解析、表情包、Steam、铁路工具等常用功能。"
+		href="/luna-bot/"
+	/>
+	<LinkCard
+		title="Koishi"
+		description="点歌、Minecraft 查询、QQ 工具、热搜和帮助命令。"
+		href="/koishi/"
+	/>
+	<LinkCard
+		title="AstrBot"
+		description="群分析、QQ 空间、表情包小偷、今日老婆和长期记忆。"
+		href="/astrbot/"
+	/>
+	<LinkCard
+		title="语音通话"
+		description="直接给 OwO 打 QQ 电话：接听节奏、插话、声纹与挂断。"
+		href="/voice-call/"
+	/>
 </CardGrid>
 
 ## 使用前先看

@@ -1,0 +1,34 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+---
+
+<StarlightPage
+	frontmatter={{ title: '页面走丢了', template: 'splash' }}
+	hasSidebar={false}
+>
+	<section class="lost-shell">
+		<p class="lost-code">404</p>
+		<h1>这页好像被 OwO 吃掉了</h1>
+		<p class="lost-copy">
+			地址可能写错了，或者这份文档已经搬到了别处。回到首页重新找，也可以直接去常用的插件手册。
+		</p>
+		<nav class="lost-links" aria-label="常用页面">
+			<a href="/">回到首页</a>
+			<a href="/luna-bot/">Luna Bot</a>
+			<a href="/koishi/">Koishi</a>
+			<a href="/astrbot/">AstrBot</a>
+		</nav>
+	</section>
+</StarlightPage>
+
+<style is:global>
+	/* 404 用自带的主标题会重复，这里只保留页面内的标题层级 */
+	.page:has(.lost-shell) .content-panel h1#_top,
+	.page:has(.lost-shell) .page-meta {
+		display: none;
+	}
+
+	.page:has(.lost-shell) .content-panel {
+		padding-top: 1.5rem;
+	}
+</style>

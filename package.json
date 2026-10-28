@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.38.2",
-    "@supabase/supabase-js": "^2.100.0",
     "astro": "^6.0.1",
     "sharp": "^0.34.2"
   }

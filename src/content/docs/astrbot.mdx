@@ -3,13 +3,15 @@ title: AstrBot
 description: "AstrBot 侧当前常见命令的用户向说明与示例。"
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
 ## 先看这页怎么用
 
 AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
-> 注意
-> 这页会混合普通功能和管理员功能。
-> 文中如果写了管理员专用，普通用户通常就不能直接使用。
+<Aside title="注意">
+	这页会混合普通功能和管理员功能。文中如果写了管理员专用，普通用户通常就不能直接使用。
+</Aside>
 
 <p class="cmd-tip">这里的指令通常直接按 <code>@OwO 指令</code> 的形式发送即可。下方代码块示例也默认按“可直接复制发送”来写。</p>
 
@@ -17,7 +19,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 适合查游戏名绑定和排名。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /绑定 游戏名
@@ -57,7 +59,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 ### 管理员命令
 
-<p class="cmd-tip">管理员专用</p>
+<p class="cmd-label">管理员专用</p>
 
 ```text
 @OwO /lm列表
@@ -91,7 +93,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 这组命令主前缀是 `/lmem`，更偏管理和维护。
 
-<p class="cmd-tip">大多数情况下更适合管理员使用。</p>
+<p class="cmd-label">大多数情况下更适合管理员使用。</p>
 
 ```text
 @OwO /lmem status
@@ -123,7 +125,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 如果只是想和 Bot 或群友互动，这组命令最直接。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /戳
@@ -153,7 +155,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 适合做最近群聊总结。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /群分析
@@ -196,7 +198,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 ### 看动态
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /查看访客
@@ -222,7 +224,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 ### 评论和点赞
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /赞说说
@@ -251,7 +253,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 ### 发动态和投稿
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /发说说
@@ -282,7 +284,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 ### 查看和撤回稿件
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /看稿
@@ -309,7 +311,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 这组命令更像管理员开关。
 
-<p class="cmd-tip">更适合管理员使用。</p>
+<p class="cmd-label">更适合管理员使用。</p>
 
 ```text
 @OwO /learning_status
@@ -339,7 +341,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 ### 基础开关和查看
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /meme status
@@ -370,7 +372,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 ### 统计和清理
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /meme emotion_stats
@@ -400,7 +402,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 这是互动娱乐插件，普通用户经常会用到。
 
-<p class="cmd-tip">可直接复制发送</p>
+<p class="cmd-label">可直接复制发送</p>
 
 ```text
 @OwO /今日老婆
@@ -445,7 +447,7 @@ AstrBot 这边很多命令默认用 `@OwO 指令` 的形式触发。
 
 这组命令前缀是 `/proactive`，主要管理主动对话。
 
-<p class="cmd-tip">更偏管理员和维护用途。</p>
+<p class="cmd-label">更偏管理员和维护用途。</p>
 
 ```text
 @OwO /proactive help
